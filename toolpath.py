@@ -29,7 +29,6 @@ class OffsetCurve(bpy.types.Operator):
     pitch: bpy.props.FloatProperty(name='Pitch', description='Distace between two parallel traces', unit='LENGTH', default=0.1)
     step_angle: bpy.props.FloatProperty(name='Resolution', description='Smaller values make curves smoother by adding more vertices', unit='ROTATION', min=math.pi/128, default=math.pi/16)
     count: bpy.props.IntProperty(name='Count', description='Number of parallel traces', min=1, default=1)
-    round_line_join: bpy.props.BoolProperty(name='Round Line Join', description='Insert circle arcs at convex corners', default=True)
     connect: bpy.props.BoolProperty(name='Connect', description='Connects all traces into one trace')
 
     @classmethod
@@ -60,7 +59,7 @@ class OffsetCurve(bpy.types.Operator):
                     return {'CANCELLED'}
             vertices = []
             for index in range(0, self.count):
-                trace = internal.offsetPolygonOfSpline(spline, self.offset+self.pitch*index, self.step_angle, self.round_line_join)
+                trace = internal.offsetPolygonOfSpline(spline, self.offset+self.pitch*index, self.step_angle)
                 if len(trace) == 0:
                     continue
                 trace = [vertex-origin for vertex in trace]
@@ -95,9 +94,8 @@ class SliceMesh(bpy.types.Operator):
         if bpy.context.object.type != 'MESH':
             self.report({'WARNING'}, 'Active object must be a mesh')
             return {'CANCELLED'}
-        depsgraph = context.evaluated_depsgraph_get()
         mesh = bmesh.new()
-        mesh.from_object(bpy.context.object, depsgraph, deform=True, cage=False, face_normals=True)
+        mesh.from_object(bpy.context.object, bpy.context.depsgraph, deform=True, cage=False, face_normals=True)
         mesh.transform(bpy.context.object.matrix_world)
         toolpath = internal.addCurveObject('Slices Toolpath')
         pitch_axis = Vector(self.pitch_axis)

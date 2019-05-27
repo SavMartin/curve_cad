@@ -26,7 +26,7 @@ from . import internal, cad, toolpath, exports
 
 bl_info = {
     'name': 'Curve CAD Tools',
-    'author': 'Alexander Meißner',
+    'author': 'Alexander Meißner,Port to 2.80 by Sav Martin',
     'version': (1, 0, 0),
     'blender': (2, 80, 0),
     'category': 'Curve',
